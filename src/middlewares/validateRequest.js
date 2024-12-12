@@ -1,10 +1,23 @@
-const validateRequest = (schema) => (req, res, next) => {
-    const {error} = schema.validate(req.query, {abortEarly: false});
-    if (error) {
-        return res.status(400).json({
-            error: 'Validation Error',
-            details: error.details.map((detail) => detail.message),
-        });
+
+const validateIPAddress = ip => {
+    const ipAddressRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}$/;
+
+    if (typeof ip !== 'string' || ip.trim() === '') {
+        return false;
+    }
+
+    return ipAddressRegex.test(ip);
+};
+
+
+const validateRequest = () => (req, res, next) => {
+    if (!validateIPAddress(req.query.ip || req.ip)) {
+        const IP = req.query.ip || req.ip;
+        req.log.info({
+            "msg": "Invalid IPV4 address",
+            IP
+        })
+        return res.sendStatus(400);
     }
     next();
 };

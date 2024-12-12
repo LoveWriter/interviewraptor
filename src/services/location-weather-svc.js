@@ -1,8 +1,7 @@
-
+const {cache, setCache} = require('../utils/cache');
 function fetchWrapper(url, options) { // top level fetch wrapper to be used for all external api calls
     return fetch(url, options)
         .then(response => {
-            console.log("RESSSSS", response); // eslint-disable-line no-console
             if (response === null) {
                 throw new Error('Response is null');
             }
@@ -45,15 +44,22 @@ function normalizeCityName(city) { // for some reason HYDERABAD comes as "city":
     return city.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Removes diacritical marks
 }
 async function getWeather(location) { // fetches weather data based on location
-
-    const url = `${process.env.WBASEURL}?q=${normalizeCityName(location.city)}&appid=${process.env.WKEY}`;
+    const city = normalizeCityName(location.city)
+    const cachedData = cache.get(city);
+    if (cachedData) {
+        return cachedData;
+    }
+    const url = `${process.env.WBASEURL}?q=${city}&appid=${process.env.WKEY}`;
     const options = {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     };
-    return await fetchWrapper(url, options);
+
+    const weatherData = await fetchWrapper(url, options);
+    setCache(city, weatherData);
+    return weatherData;
 }
 
 exports.getLocation = getLocation;
