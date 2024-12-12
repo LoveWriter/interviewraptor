@@ -5,7 +5,7 @@ A Node.js backend API that retrieves weather information based on IP address usi
 
 ## Prerequisites
 - Node.js 20+
-- Redis
+- NODE-CACHE
 - API Keys:
   - IPStack (Location Service)
   - OpenWeatherMap (Weather Service)
@@ -28,6 +28,7 @@ A Node.js backend API that retrieves weather information based on IP address usi
 ## API Endpoints
 - `GET /api/v1/weather-by-ip`: Retrieve weather by IP
   - Query param: `ip` (optional)
+  - since this is local so req.ip will not work so please add ip as req.query.ip
 
 ## Testing
 Run tests: `npm test`
