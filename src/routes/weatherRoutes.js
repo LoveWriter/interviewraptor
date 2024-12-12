@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get(
     '/weather-by-ip',
-    validateRequest(weatherSchema),
+    validateRequest(weatherSchema), // middleware
     getWeatherByLocation
 );
 
